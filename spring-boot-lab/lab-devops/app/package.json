@@ -1,0 +1,28 @@
+{
+  "name": "lab-encomendas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lab DevOps: API de encomendas com Postgres, Redis, Kafka e RabbitMQ",
+  "scripts": {
+    "start": "node src/server.js",
+    "worker:email": "node src/worker-email.js",
+    "worker:analytics": "node src/worker-analytics.js",
+    "worker:fraud": "node src/worker-fraud.js",
+    "lint": "node scripts/lint.js",
+    "test": "node --test",
+    "check": "node scripts/lab-check.js",
+    "stampede": "node scripts/stampede.js",
+    "flood": "node scripts/flood.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "express": "^5.1.0",
+    "ioredis": "^5.4.1",
+    "kafkajs": "^2.2.4",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

@@ -1,0 +1,9 @@
+# Production profile (customers run with SPRING_PROFILES_ACTIVE=prod)
+riskcube:
+  market-data:
+    url: ${MARKET_DATA_URL}
+
+logging:
+  level:
+    root: WARN
+    com.riskcube: INFO

@@ -1,0 +1,6 @@
+location = "francecentral"
+resource_group_name = "rg-devsecops-lab"
+project_name = "cloud-native-n-tier"
+environment_name = "dev"
+postgres_admin_user = "postgresadmin"
+postgres_admin_password = "password!123456"

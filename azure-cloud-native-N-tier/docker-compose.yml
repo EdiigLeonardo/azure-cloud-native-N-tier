@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-backend}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - n-tier
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      JDBC_DATABASE_URL: ${JDBC_DATABASE_URL:-jdbc:postgresql://db:5432/backend}
+      JDBC_DATABASE_USERNAME: ${JDBC_DATABASE_USERNAME:-postgres}
+      JDBC_DATABASE_PASSWORD: ${JDBC_DATABASE_PASSWORD:-change_me}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
+    depends_on:
+      - db
+    ports:
+      - 8080
+    networks:
+      - n-tier
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 3000:80
+    networks:
+      - n-tier
+
+  proxy:
+    image: nginx:stable-alpine
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - 80:80
+    volumes:
+      - ./proxy/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - n-tier
+
+volumes:
+  db-data:
+
+networks:
+  n-tier:
+    driver: bridge

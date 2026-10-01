@@ -1,0 +1,74 @@
+# Stack local completa — custo zero. `docker compose up -d --build`
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab
+      POSTGRES_DB: lab
+    ports: ["5432:5432"]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  kafka:
+    image: apache/kafka:3.8.0
+    ports: ["29092:29092"]
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+
+  kafka-ui:
+    image: kafbat/kafka-ui:latest
+    ports: ["8080:8080"]
+    environment:
+      KAFKA_CLUSTERS_0_NAME: lab
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on: [kafka]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports: ["5672:5672", "15672:15672"]   # UI: http://localhost:15672 (guest/guest)
+
+  api:
+    build: ./app
+    ports: ["3000:3000"]
+    environment: &app-env
+      DATABASE_URL: postgres://lab:lab@postgres:5432/lab
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+      DB_DELAY_MS: "200"
+      RATE_LIMIT_MAX: "100"
+      CHAOS: "false"
+    depends_on: [postgres, redis, kafka, rabbitmq]
+
+  worker-email:
+    build: ./app
+    command: ["node", "src/worker-email.js"]
+    environment: *app-env
+    depends_on: [rabbitmq]
+
+  worker-analytics:
+    build: ./app
+    command: ["node", "src/worker-analytics.js"]
+    environment: *app-env
+    depends_on: [kafka]
+
+  worker-fraud:
+    build: ./app
+    command: ["node", "src/worker-fraud.js"]
+    environment: *app-env
+    depends_on: [kafka]

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: riskcube
+  mvc:
+    async:
+      request-timeout: 120s   # lets the fake provider be "very slow"
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.jdbc.batch_size: 500
+      hibernate.order_inserts: true
+
+server:
+  tomcat:
+    threads:
+      max: 20          # small on purpose: makes thread starvation easy to see
+
+riskcube:
+  market-data:
+    url: http://localhost:8080/mock
+  seed:
+    trades: 20000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,threaddump,heapdump
+
+logging:
+  pattern:
+    level: "%5p [req=%X{requestId:-}]"

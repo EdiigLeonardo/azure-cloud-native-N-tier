@@ -1,0 +1,193 @@
+# ==============================================================================
+# Comprehensive .gitignore for DevOps, Cloud & Multi-Tier Development
+# Stacks: Java (Spring Boot / Maven / Gradle), Node.js, Terraform, Kubernetes,
+#         Docker, Cloud Providers (Azure/AWS), IDEs & Operating Systems
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment & Sensitive Data / Secrets
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pub
+*.cert
+*.cer
+*.crt
+*.pfx
+*.p12
+id_rsa
+id_rsa*
+id_ed25519*
+*credentials*
+secret.yaml
+secrets.yaml
+*-secret.yaml
+*-secrets.yaml
+
+# ------------------------------------------------------------------------------
+# 2. DevOps & Infrastructure as Code (IaC)
+# ------------------------------------------------------------------------------
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!terraform.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Azure & Cloud CLIs
+.azure/
+.aws/
+azureProfile.json
+
+# Kubernetes & Helm
+kubeconfig*
+*.kubeconfig
+.kube/
+*.tgz
+helm-dry-run.yaml
+
+# Docker
+docker-compose.override.yml
+*.tar
+
+# ------------------------------------------------------------------------------
+# 3. Node.js & Frontend
+# ------------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+dist/
+out/
+.next/
+.nuxt/
+.turbo/
+.parcel-cache/
+.cache/
+
+# ------------------------------------------------------------------------------
+# 4. Java & Spring Boot (Maven & Gradle)
+# ------------------------------------------------------------------------------
+# Compiled classes & packages
+*.class
+*.war
+*.ear
+*.nar
+*.jar
+!**/wrapper/*.jar
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+!src/**/build/
+
+# ------------------------------------------------------------------------------
+# 5. Logs, Dumps & Local Databases
+# ------------------------------------------------------------------------------
+*.log
+logs/
+*.sqlite
+*.sqlite3
+*.db
+dump.rdb
+# Database persistent storage volumes mounted locally
+pgdata/
+postgres-data/
+mysql-data/
+redis-data/
+mongo-data/
+
+# ------------------------------------------------------------------------------
+# 6. Testing & Code Coverage
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+.coverage
+.coverage.*
+htmlcov/
+*.lcov
+
+# ------------------------------------------------------------------------------
+# 7. IDEs & Editors
+# ------------------------------------------------------------------------------
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (IntelliJ IDEA, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbproject/Makefile-*.mk
+/nbproject/Package-*.bash
+
+# Vim & generic backup files
+*~
+*.swp
+*.swo
+*.bak
+
+# ------------------------------------------------------------------------------
+# 8. Operating System Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+core
+core.*

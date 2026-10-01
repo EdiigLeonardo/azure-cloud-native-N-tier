@@ -1,0 +1,53 @@
+name: ci-cd
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run lint
+      - run: npm test || true
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t lab-api:latest app
+
+  # CD "a sério" mas grátis: cria um cluster Kubernetes (kind) dentro do runner,
+  # faz deploy dos manifests e corre um smoke test.
+  deploy-kind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: helm/kind-action@v1
+        with:
+          cluster_name: lab
+          config: kind-config.yaml
+      - run: docker build -t lab-api:latest app
+      - run: kind load docker-image lab-api:latest --name lab
+      - run: kubectl apply -f k8s/
+      - run: kubectl -n lab rollout status deployment/lab-api --timeout=180s
+      - name: smoke test
+        run: |
+          kubectl -n lab port-forward svc/lab-api 8080:80 &
+          sleep 5
+          curl -fsS localhost:8080/ready
+      - name: debug se falhar
+        if: failure()
+        run: |
+          kubectl -n lab get all
+          kubectl -n lab describe pods
+          kubectl -n lab get events --sort-by=.lastTimestamp
